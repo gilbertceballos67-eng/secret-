@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Can You Be My Valentine? 💖</title>
 
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@2/dist/email.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
@@ -89,6 +88,23 @@ img{
     from{transform:translateY(100vh);}
     to{transform:translateY(-10vh);}
 }
+
+select{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    font-size:16px;
+    border:none;
+    border-radius:25px;
+    background:#ff4d6d;
+    color:white;
+    cursor:pointer;
+}
+
+select option{
+    background:#333;
+    color:white;
+}
 </style>
 </head>
 
@@ -107,19 +123,33 @@ img{
 <div class="card hidden" id="dateCard">
     <h1>She said YES!!! 🥹💘<br>Choose our date:</h1>
 
-    <button onclick="chooseDate('Movie Date - SM or Fora')">🎬 Movie Date (SM / Fora)</button>
-    <button onclick="chooseDate('Park Date - Nuvali')">🌳 Park Date (Nuvali)</button>
-    <button onclick="chooseDate('Street Food Date - Complex')">🍢 Street Food Date (Complex)</button>
+    <button onclick="selectDate('Movie Date - SM or Fora')">🎬 Movie Date (SM / Fora)</button>
+    <button onclick="selectDate('Park Date - Nuvali')">🌳 Park Date (Nuvali)</button>
+    <button onclick="selectDate('Street Food Date - Complex')">🍢 Street Food Date (Complex)</button>
+</div>
+
+<div class="card hidden" id="timeCard">
+    <h1>What time? ⏰</h1>
+    
+    <select id="timeSelect">
+        <option value="">Select a time...</option>
+        <option value="1:00 PM">1:00 PM</option>
+        <option value="1:15 PM">1:15 PM</option>
+        <option value="1:30 PM">1:30 PM</option>
+        <option value="1:45 PM">1:45 PM</option>
+        <option value="2:00 PM">2:00 PM</option>
+    </select>
+
+    <button onclick="confirmTime()">Confirm ✅</button>
 </div>
 
 <script>
-
-emailjs.init("Bv1WjmvlA2anhGPVH");
 
 let noCount = 0;
 let yesBtn = document.getElementById("yesBtn");
 let noBtn = document.getElementById("noBtn");
 let gif = document.getElementById("gif");
+let selectedDate = "";
 
 let gifs = [
 "https://media.giphy.com/media/ROF8OQvDmxytW/giphy.gif",
@@ -149,7 +179,27 @@ yesBtn.addEventListener("click", function(){
     celebrate();
 });
 
-function chooseDate(date){
+function selectDate(date){
+    selectedDate = date;
+    document.getElementById("dateCard").classList.add("hidden");
+    document.getElementById("timeCard").classList.remove("hidden");
+}
+
+function confirmTime(){
+    const timeSelect = document.getElementById("timeSelect");
+    const selectedTime = timeSelect.value;
+
+    if(!selectedTime){
+        alert("Please select a time! ⏰");
+        return;
+    }
+
+    chooseDate(selectedDate, selectedTime);
+}
+
+function chooseDate(date, time){
+    const discordWebhookUrl = "https://discord.com/api/webhooks/1471637517374591242/EhkDO3BlxOkdCsMlgNGIfs_ouyK403ojYPmuVIiyk0Hg_we_s82Shww056cadPJlTajg";
+    
     // Show loading state
     document.body.innerHTML = `
         <div style="text-align:center;margin-top:150px;color:white;">
@@ -157,22 +207,33 @@ function chooseDate(date){
         </div>
     `;
 
-    emailjs.send("service_3adx3n5", "template_32ha82a", {
-        message: date,
-        to_name: "Diane",
-        from_name: "Your Valentine"
-    }).then(function(response) {
-        console.log("SUCCESS!", response.status, response.text);
+    fetch(discordWebhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            content: `🎉 **Diane chose:** ${date}\n⏰ **Time:** ${time}** 💕` 
+        })
+    })
+    .then(response => {
+        console.log("Message sent to Discord!");
         document.body.innerHTML = `
             <div style="text-align:center;margin-top:150px;color:white;">
             <h1>See you on our ${date}! 💕</h1>
+            <h2>Time: ${time} 🕐</h2>
             <h2>I can't wait to be with you 🥰</h2>
             </div>
         `;
-    }).catch(function(error) {
-        console.error("FAILED...", error);
-        alert("Oops! Something went wrong. Please try again.\n\nError: " + error.text);
-        location.reload(); // Reload page to try again
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        // Still show success message even if there's an error
+        document.body.innerHTML = `
+            <div style="text-align:center;margin-top:150px;color:white;">
+            <h1>See you on our ${date}! 💕</h1>
+            <h2>Time: ${time} 🕐</h2>
+            <h2>I can't wait to be with you 🥰</h2>
+            </div>
+        `;
     });
 }
 
