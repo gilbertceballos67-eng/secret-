@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Can You Be My Valentine? 💖</title>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@2/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body{
+    height:100vh;
+    background: linear-gradient(135deg,#ff9a9e,#fad0c4);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    overflow:hidden;
+    color:#fff;
+    padding:20px;
+}
+
+.card{
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px);
+    border-radius:25px;
+    padding:30px 20px;
+    width:100%;
+    max-width:400px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.2);
+}
+
+h1{
+    font-size:24px;
+    margin-bottom:20px;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    margin:10px 0;
+    font-size:18px;
+    border:none;
+    border-radius:50px;
+    transition:0.3s;
+    cursor:pointer;
+}
+
+#yesBtn{
+    background:#ff4d6d;
+    color:white;
+}
+
+#noBtn{
+    background:#6c757d;
+    color:white;
+}
+
+button:active{
+    transform:scale(0.95);
+}
+
+img{
+    width:180px;
+    margin-top:10px;
+    border-radius:15px;
+}
+
+.hidden{
+    display:none;
+}
+
+.heart{
+    position:absolute;
+    color:white;
+    font-size:20px;
+    animation:float 4s linear infinite;
+}
+
+@keyframes float{
+    from{transform:translateY(100vh);}
+    to{transform:translateY(-10vh);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="card" id="mainCard">
+    <h1>Hi Diane 💕<br><br>
+    Will you be my Valentine?</h1>
+
+    <button id="yesBtn">YES 💖</button>
+    <button id="noBtn">NO 💔</button>
+
+    <img id="gif" src="https://media.giphy.com/media/d2lcHJTG5Tscg/giphy.gif">
+</div>
+
+<div class="card hidden" id="dateCard">
+    <h1>She said YES!!! 🥹💘<br>Choose our date:</h1>
+
+    <button onclick="chooseDate('Movie Date - SM or Fora')">🎬 Movie Date (SM / Fora)</button>
+    <button onclick="chooseDate('Park Date - Nuvali')">🌳 Park Date (Nuvali)</button>
+    <button onclick="chooseDate('Street Food Date - Complex')">🍢 Street Food Date (Complex)</button>
+</div>
+
+<script>
+
+emailjs.init("");
+
+let noCount = 0;
+let yesBtn = document.getElementById("yesBtn");
+let noBtn = document.getElementById("noBtn");
+let gif = document.getElementById("gif");
+
+let gifs = [
+"https://media.giphy.com/media/ROF8OQvDmxytW/giphy.gif",
+"https://media.giphy.com/media/OPU6wzx8JrHna/giphy.gif",
+"https://media.giphy.com/media/3o6ZtaO9BZHcOjmErm/giphy.gif",
+"https://media.giphy.com/media/L95W4wv8nnb9K/giphy.gif",
+"https://media.giphy.com/media/d2lcHJTG5Tscg/giphy.gif"
+];
+
+noBtn.addEventListener("click", function(){
+    noCount++;
+
+    if(noCount <= 5){
+        gif.src = gifs[noCount-1];
+        yesBtn.style.transform = "scale(" + (1 + noCount * 0.15) + ")";
+        noBtn.style.transform = "scale(" + (1 - noCount * 0.15) + ")";
+    }
+
+    if(noCount >= 5){
+        noBtn.style.display = "none";
+    }
+});
+
+yesBtn.addEventListener("click", function(){
+    document.getElementById("mainCard").classList.add("hidden");
+    document.getElementById("dateCard").classList.remove("hidden");
+    celebrate();
+});
+
+function chooseDate(date){
+
+    emailjs.send("service_3adx3n5","template_32ha82a",{
+        message: date
+    });
+
+    document.body.innerHTML = `
+        <div style="text-align:center;margin-top:150px;color:white;">
+        <h1>See you on our ${date}! 💕</h1>
+        <h2>I can't wait to be with you 🥰</h2>
+        </div>
+    `;
+}
+
+function celebrate(){
+    let duration = 3000;
+    let end = Date.now() + duration;
+
+    (function frame(){
+        confetti({
+            particleCount: 6,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+
+        if(Date.now() < end){
+            requestAnimationFrame(frame);
+        }
+    }());
+}
+
+setInterval(()=>{
+    let heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerHTML="💖";
+    heart.style.left=Math.random()*100+"vw";
+    heart.style.fontSize=(Math.random()*10+15)+"px";
+    document.body.appendChild(heart);
+
+    setTimeout(()=>{heart.remove();},4000);
+},500);
+
+</script>
+
+</body>
+</html>
