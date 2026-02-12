@@ -150,11 +150,19 @@ yesBtn.addEventListener("click", function(){
 });
 
 function chooseDate(date){
+    // Show loading state
+    document.body.innerHTML = `
+        <div style="text-align:center;margin-top:150px;color:white;">
+        <h1>Sending... 💌</h1>
+        </div>
+    `;
 
-    emailjs.send("service_3adx3n5","template_32ha82a",{
-        message: date
+    emailjs.send("service_3adx3n5", "template_32ha82a", {
+        message: date,
+        to_name: "Diane",
+        from_name: "Your Valentine"
     }).then(function(response) {
-        // Email sent successfully
+        console.log("SUCCESS!", response.status, response.text);
         document.body.innerHTML = `
             <div style="text-align:center;margin-top:150px;color:white;">
             <h1>See you on our ${date}! 💕</h1>
@@ -162,9 +170,9 @@ function chooseDate(date){
             </div>
         `;
     }).catch(function(error) {
-        // Email failed to send
-        console.error("Email failed to send:", error);
-        alert("Oops! Something went wrong. Please try again.");
+        console.error("FAILED...", error);
+        alert("Oops! Something went wrong. Please try again.\n\nError: " + error.text);
+        location.reload(); // Reload page to try again
     });
 }
 
