@@ -153,14 +153,19 @@ function chooseDate(date){
 
     emailjs.send("service_3adx3n5","template_32ha82a",{
         message: date
+    }).then(function(response) {
+        // Email sent successfully
+        document.body.innerHTML = `
+            <div style="text-align:center;margin-top:150px;color:white;">
+            <h1>See you on our ${date}! 💕</h1>
+            <h2>I can't wait to be with you 🥰</h2>
+            </div>
+        `;
+    }).catch(function(error) {
+        // Email failed to send
+        console.error("Email failed to send:", error);
+        alert("Oops! Something went wrong. Please try again.");
     });
-
-    document.body.innerHTML = `
-        <div style="text-align:center;margin-top:150px;color:white;">
-        <h1>See you on our ${date}! 💕</h1>
-        <h2>I can't wait to be with you 🥰</h2>
-        </div>
-    `;
 }
 
 function celebrate(){
